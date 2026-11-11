@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator & Solver Matematika SMA</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for rendering math formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">MathSolver SMA</h1>
+                <p class="text-indigo-100 text-sm mt-1">Solusi & Langkah Penyelesaian Matematika Tingkat SMA (Fase E & F)</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex gap-2">
+                <span class="bg-indigo-700 text-indigo-100 text-xs font-medium px-3 py-1 rounded-full">Aljabar</span>
+                <span class="bg-indigo-700 text-indigo-100 text-xs font-medium px-3 py-1 rounded-full">Kalkulus</span>
+                <span class="bg-indigo-700 text-indigo-100 text-xs font-medium px-3 py-1 rounded-full">Trigonometri</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Sidebar: Menu / Topic Selector -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-fit">
+            <h2 class="text-lg font-semibold text-slate-900 mb-4 pb-2 border-b border-slate-100">Pilih Topik Materi</h2>
+            <nav class="space-y-2">
+                <button onclick="selectTopic('kuadrat')" id="btn-kuadrat" class="w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors bg-indigo-50 text-indigo-600">
+                    Persamaan Kuadrat ($ax^2 + bx + c = 0$)
+                </button>
+                <button onclick="selectTopic('aritmatika')" id="btn-aritmatika" class="w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors hover:bg-slate-50 text-slate-600">
+                    Barisan & Deret Aritmatika
+                </button>
+                <button onclick="selectTopic('geometri')" id="btn-geometri" class="w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors hover:bg-slate-50 text-slate-600">
+                    Barisan & Deret Geometri
+                </button>
+                <button onclick="selectTopic('turunan')" id="btn-turunan" class="w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors hover:bg-slate-50 text-slate-600">
+                    Turunan Fungsi Aljabar ($f(x) = ax^n$)
+                </button>
+                <button onclick="selectTopic('peluang')" id="btn-peluang" class="w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors hover:bg-slate-50 text-slate-600">
+                    Kaidah Pencacahan & Peluang ($n!$)
+                </button>
+            </nav>
+        </div>
+
+        <!-- Right / Main Section: Calculator & Solution Output -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Input Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h2 id="form-title" class="text-xl font-bold text-slate-900 mb-2">Persamaan Kuadrat</h2>
+                <p id="form-desc" class="text-sm text-slate-500 mb-6">Masukkan nilai koefisien $a$, $b$, dan $c$ untuk mencari akar-akar persamaan dan diskriminannya.</p>
+                
+                <!-- Form Container -->
+                <div id="calculator-form" class="space-y-4">
+                    <!-- Dynamic inputs will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Solution Card -->
+            <div id="solution-card" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hidden">
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-900">Langkah-Langkah Penyelesaian</h3>
+                    <span class="bg-emerald-50 text-emerald-600 text-xs font-semibold px-2.5 py-1 rounded">Selesai</span>
+                </div>
+                <div id="solution-content" class="space-y-4 text-slate-700 text-sm leading-relaxed">
+                    <!-- Solution steps go here -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026 MathSolver SMA. Dirancang untuk membantu pembelajaran matematika tingkat lanjut.</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let currentTopic = 'kuadrat';
+
+        function selectTopic(topic) {
+            currentTopic = topic;
+            
+            // Update active states on buttons
+            const topics = ['kuadrat', 'aritmatika', 'geometri', 'turunan', 'peluang'];
+            topics.forEach(t => {
+                const btn = document.getElementById(`btn-${t}`);
+                if (t === topic) {
+                    btn.className = "w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors bg-indigo-50 text-indigo-600";
+                } else {
+                    btn.className = "w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors hover:bg-slate-50 text-slate-600";
+                }
+            });
+
+            renderForm();
+            document.getElementById('solution-card').classList.add('hidden');
+        }
+
+        function renderForm() {
+            const titleEl = document.getElementById('form-title');
+            const descEl = document.getElementById('form-desc');
+            const formContainer = document.getElementById('calculator-form');
+
+            if (currentTopic === 'kuadrat') {
+                titleEl.innerText = "Persamaan Kuadrat";
+                descEl.innerHTML = "Masukkan nilai koefisien $a$, $b$, dan $c$ dari bentuk $ax^2 + bx + c = 0$.";
+                formContainer.innerHTML = `
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nilai a</label>
+                            <input type="number" id="q-a" value="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nilai b</label>
+                            <input type="number" id="q-b" value="-5" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nilai c</label>
+                            <input type="number" id="q-c" value="6" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <button onclick="solveKuadrat()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm">Hitung & Selesaikan</button>
+                `;
+            } else if (currentTopic === 'aritmatika') {
+                titleEl.innerText = "Barisan & Deret Aritmatika";
+                descEl.innerHTML = "Cari suku ke-$n$ ($U_n$) dan jumlah $n$ suku pertama ($S_n$).";
+                formContainer.innerHTML = `
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Suku Pertama (a / $U_1$)</label>
+                            <input type="number" id="arit-a" value="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Beda (b)</label>
+                            <input type="number" id="arit-b" value="4" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Suku ke-n (n)</label>
+                            <input type="number" id="arit-n" value="10" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <button onclick="solveAritmatika()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm">Hitung & Selesaikan</button>
+                `;
+            } else if (currentTopic === 'geometri') {
+                titleEl.innerText = "Barisan & Deret Geometri";
+                descEl.innerHTML = "Cari suku ke-$n$ ($U_n$) dan jumlah suku deret geometri.";
+                formContainer.innerHTML = `
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Suku Pertama (a)</label>
+                            <input type="number" id="geo-a" value="2" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Rasio (r)</label>
+                            <input type="number" id="geo-r" value="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Suku ke-n (n)</label>
+                            <input type="number" id="geo-n" value="5" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <button onclick="solveGeometri()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm">Hitung & Selesaikan</button>
+                `;
+            } else if (currentTopic === 'turunan') {
+                titleEl.innerText = "Turunan Fungsi Aljabar";
+                descEl.innerHTML = "Menghitung turunan dari bentuk $f(x) = ax^n$.";
+                formContainer.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Koefisien (a)</label>
+                            <input type="number" id="der-a" value="4" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Pangkat (n)</label>
+                            <input type="number" id="der-n" value="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <button onclick="solveTurunan()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm">Hitung & Selesaikan</button>
+                `;
+            } else if (currentTopic === 'peluang') {
+                titleEl.innerText = "Kaidah Pencacahan (Faktorial)";
+                descEl.innerHTML = "Menghitung nilai faktorial $n!$ untuk permutasi dan kombinasi.";
+                formContainer.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nilai n</label>
+                        <input type="number" id="pel-n" value="5" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <button onclick="solvePeluang()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm">Hitung & Selesaikan</button>
+                `;
+            }
+
+            // Re-render math in newly added form texts
+            if (window.MathJax) {
+                MathJax.typeset();
+            }
+        }
+
+        function displaySolution(htmlContent) {
+            const card = document.getElementById('solution-card');
+            const content = document.getElementById('solution-content');
+            content.innerHTML = htmlContent;
+            card.classList.remove('hidden');
+
+            if (window.MathJax) {
+                MathJax.typeset();
+            }
+        }
+
+        function solveKuadrat() {
+            let a = parseFloat(document.getElementById('q-a').value);
+            let b = parseFloat(document.getElementById('q-b').value);
+            let c = parseFloat(document.getElementById('q-c').value);
+
+            let D = (b * b) - (4 * a * c);
+            let steps = `<p><b>Diketahui:</b> Persamaan kuadrat $${a}x^2 + ${b}x + ${c} = 0$</p>`;
+            steps += `<p>1. Menghitung Diskriminan ($D$):<br>
+                $$D = b^2 - 4ac$$
+                $$D = (${b})^2 - 4(${a})(${c}) = ${b*b} - ${4*a*c} = ${D}$$
+            </p>`;
+
+            if (D > 0) {
+                let x1 = (-b + Math.sqrt(D)) / (2 * a);
+                let x2 = (-b - Math.sqrt(D)) / (2 * a);
+                steps += `<p>2. Karena $D > 0$, persamaan memiliki dua akar real yang berlainan:</p>
+                $$x_{1,2} = \\frac{-b \\pm \\sqrt{D}}{2a}$$
+                $$x_1 = \\frac{-(${b}) + \\sqrt{${D}}}{2(${a})} = ${x1.toFixed(2)}$$
+                $$x_2 = \\frac{-(${b}) - \\sqrt{${D}}}{2(${a})} = ${x2.toFixed(2)}$$`;
+            } else if (D === 0) {
+                let x = -b / (2 * a);
+                steps += `<p>2. Karena $D = 0$, persamaan memiliki akar kembar:</p>
+                $$x_1 = x_2 = \\frac{-b}{2a} = \\frac{-(${b})}{2(${a})} = ${x.toFixed(2)}$$`;
+            } else {
+                steps += `<p>2. Karena $D < 0$, akar-akar persamaan berupa bilangan imajiner / kompleks (tidak memiliki akar real).</p>`;
+            }
+
+            displaySolution(steps);
+        }
+
+        function solveAritmatika() {
+            let a = parseFloat(document.getElementById('arit-a').value);
+            let b = parseFloat(document.getElementById('arit-b').value);
+            let n = parseInt(document.getElementById('arit-n').value);
+
+            let un = a + (n - 1) * b;
+            let sn = (n / 2) * (2 * a + (n - 1) * b);
+
+            let steps = `<p><b>Diketahui:</b> Suku pertama ($a$) = ${a}, Beda ($b$) = ${b}, Suku ke-$n$ ($n$) = ${n}</p>`;
+            steps += `<p>1. Menghitung Suku ke-$n$ ($U_n$):<br>
+                $$U_n = a + (n-1)b$$
+                $$U_{${n}} = ${a} + (${n}-1)(${b}) = ${a} + ${ (n-1)*b } = ${un}$$
+            </p>`;
+            steps += `<p>2. Menghitung Jumlah $n$ Suku Pertama ($S_n$):<br>
+                $$S_n = \\frac{n}{2}(2a + (n-1)b)$$
+                $$S_{${n}} = \\frac{${n}}{2}(2(${a}) + (${n}-1)(${b})) = ${sn}$$
+            </p>`;
+
+            displaySolution(steps);
+        }
+
+        function solveGeometri() {
+            let a = parseFloat(document.getElementById('geo-a').value);
+            let r = parseFloat(document.getElementById('geo-r').value);
+            let n = parseInt(document.getElementById('geo-n').value);
+
+            let un = a * Math.pow(r, n - 1);
+            let sn = r !== 1 ? (a * (Math.pow(r, n) - 1)) / (r - 1) : a * n;
+
+            let steps = `<p><b>Diketahui:</b> Suku pertama ($a$) = ${a}, Rasio ($r$) = ${r}, Suku ke-$n$ ($n$) = ${n}</p>`;
+            steps += `<p>1. Menghitung Suku ke-$n$ ($U_n$):<br>
+                $$U_n = a \\cdot r^{n-1}$$
+                $$U_{${n}} = ${a} \\cdot ${r}^{${n}-1} = ${un}$$
+            </p>`;
+            steps += `<p>2. Menghitung Jumlah $n$ Suku Pertama ($S_n$):<br>
+                $$S_n = \\frac{a(r^n - 1)}{r - 1}$$
+                $$S_{${n}} = \\frac{${a}(${r}^{${n}} - 1)}{${r} - 1} = ${sn}$$
+            </p>`;
+
+            displaySolution(steps);
+        }
+
+        function solveTurunan() {
+            let a = parseFloat(document.getElementById('der-a').value);
+            let n = parseFloat(document.getElementById('der-n').value);
+
+            let newA = a * n;
+            let newN = n - 1;
+
+            let steps = `<p><b>Diketahui:</b> Fungsi $f(x) = ${a}x^{${n}}$</p>`;
+            steps += `<p>Menggunakan rumus turunan fungsi aljabar: Jika $f(x) = ax^n$, maka $f'(x) = \\cdot a \\cdot n \\cdot x^{n-1}$.</p>`;
+            steps += `<p>$$f'(x) = (${a} \\cdot ${n})x^{${n}-1} = ${newA}x^{${newN}}$</p>`;
+
+            displaySolution(steps);
+        }
+
+        function solvePeluang() {
+            let n = parseInt(document.getElementById('pel-n').value);
+            if (n < 0 || n > 20) {
+                displaySolution("<p class='text-red-500'>Masukkan nilai $n$ antara 0 sampai 20 agar perhitungan tidak terlalu besar.</p>");
+                return;
+            }
+
+            let result = 1;
+            let breakdown = [];
+            for (let i = n; i >= 1; i--) {
+                result *= i;
+                breakdown.push(i);
+            }
+            if (n === 0) {
+                result = 1;
+                breakdown = [1];
+            }
+
+            let steps = `<p><b>Menghitung Faktorial ($n!$):</b></p>`;
+            steps += `<p>$$${n}! = ${breakdown.join(' \\times ')} = ${result}$$</p>`;
+
+            displaySolution(steps);
+        }
+
+        // Initialize default form on load
+        window.onload = function() {
+            renderForm();
+        };
+    </script>
+</body>
+</html>
